@@ -1,8 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:todo_game/firebase_options.dart';
-import 'package:todo_game/home_page.dart';
+import 'package:todo_game/pages/login_page.dart';
+import 'package:todo_game/pages/register_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,9 +23,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const HomePage(),
+          textTheme:
+              GoogleFonts.orbitronTextTheme().apply(bodyColor: Colors.white)),
+      home: const RegisterPage(),
     );
   }
 }
