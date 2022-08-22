@@ -41,6 +41,7 @@ dependencies:
   equatable:
   flutter_bloc:
   google_fonts: ^2.3.1
+  formz: ^0.4.1
 
 dev_dependencies:
   flutter_test:

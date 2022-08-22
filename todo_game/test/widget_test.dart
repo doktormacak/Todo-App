@@ -7,13 +7,16 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:todo_game/main.dart';
+import 'package:todo_game/app.dart';
+import 'package:todo_game/auth_repository.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+    // ignore: prefer_const_constructors
+    await tester.pumpWidget(App(
+      authenticationRepository: AuthenticationRepository(),
+    ));
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);
