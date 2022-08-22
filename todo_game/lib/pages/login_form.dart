@@ -131,6 +131,9 @@ class _SignUpButton extends StatelessWidget {
 }
 
 class _RecoverPasswordButton extends StatelessWidget {
+  final TextEditingController _passwordResetController =
+      TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -144,15 +147,18 @@ class _RecoverPasswordButton extends StatelessWidget {
               bottom: MediaQuery.of(context).viewInsets.bottom,
             ),
             child: Padding(
-              padding: EdgeInsets.all(20.0),
+              padding: const EdgeInsets.all(20.0),
               child: Column(
                 children: [
-                  TextField(),
+                  TextField(
+                    controller: _passwordResetController,
+                  ),
                   TextButton(
-                      child: Text('Reset Password'),
+                      child: const Text('Reset Password'),
                       onPressed: () async {
                         await FirebaseAuth.instance.sendPasswordResetEmail(
-                            email: "lazarevic.vesko@gmail.com");
+                            email: _passwordResetController.text);
+                        _passwordResetController.clear();
                       }),
                 ],
               ),
