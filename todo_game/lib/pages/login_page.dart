@@ -172,12 +172,13 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
+      
+      backgroundColor: const Color(0xFF661f4f),
       body: Padding(
         padding: const EdgeInsets.all(8),
         child: BlocProvider(
           create: (_) => LoginCubit(context.read<AuthenticationRepository>()),
-          child:  LoginForm(),
+          child: const LoginForm(),
         ),
       ),
     );

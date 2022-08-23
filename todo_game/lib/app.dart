@@ -1,6 +1,7 @@
 import 'package:flow_builder/flow_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:todo_game/auth_repository.dart';
 import 'package:todo_game/bloc/app_bloc.dart';
 import 'package:todo_game/routes/routes.dart';
@@ -33,6 +34,9 @@ class AppView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+          textTheme:
+              GoogleFonts.orbitronTextTheme().apply(bodyColor: Colors.white)),
       debugShowCheckedModeBanner: false,
       home: FlowBuilder<AppStatus>(
         state: context.select((AppBloc bloc) => bloc.state.status),
