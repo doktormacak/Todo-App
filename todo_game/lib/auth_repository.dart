@@ -199,11 +199,12 @@ class AuthenticationRepository {
   /// Throws a [SignUpWithEmailAndPasswordFailure] if an exception occurs.
   Future<void> signUp({required String email, required String password}) async {
     try {
-      await _firebaseAuth.createUserWithEmailAndPassword(
+      var userUid = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      await FirebaseFirestore.instance.collection("users").doc(password).set({
+      final uid = userUid.user?.uid;
+      await FirebaseFirestore.instance.collection("users").doc(uid).set({
         "email": email,
       });
     } on FirebaseAuthException catch (e) {

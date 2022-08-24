@@ -1,7 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:todo_game/bloc/app_bloc.dart';
 import 'package:todo_game/pages/login_page.dart';
-import 'package:todo_game/pages/register_page.dart';
+import 'package:todo_game/pages/home_page.dart';
+import 'package:todo_game/pages/profile_page.dart';
 
 List<Page<dynamic>> onGenerateAppViewPages(
   AppStatus state,
@@ -9,7 +10,7 @@ List<Page<dynamic>> onGenerateAppViewPages(
 ) {
   switch (state) {
     case AppStatus.authenticated:
-      return [RegisterPage.page()];
+      return [ProfilePage.page()];
     case AppStatus.unauthenticated:
       return [LoginPage.page()];
   }
