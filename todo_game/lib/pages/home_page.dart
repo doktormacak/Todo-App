@@ -6,6 +6,7 @@ import 'package:todo_game/models/todo.dart';
 import 'package:todo_game/widgets/todo_tile.dart';
 
 class HomePage extends StatelessWidget {
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
   HomePage({
     Key? key,
     required this.tasksList,
@@ -17,7 +18,7 @@ class HomePage extends StatelessWidget {
           Todo('dasad', 'ds', false),
           Todo('dasad', 'ds', false),
         ],
-      ));
+      )); 
   final TextEditingController _todoController = TextEditingController();
   final List<Todo> tasksList;
 
@@ -30,32 +31,35 @@ class HomePage extends StatelessWidget {
           .add({
         'content': _todoController.text,
         'done': false,
+        'uid':uid
       });
     } catch (e) {
       rethrow;
     }
   }
 
-  Future<void> editTodo() async {
+  Future<void> editTodo(String uid, String todoid) async {
     try {
       await FirebaseFirestore.instance
           .collection("users")
-          .doc("djovanidjovani123")
+          .doc(uid)
           .collection("todos")
-          .doc("3sNCR3fmgEvjMwjYmiyG")
-          .update({"content": "VESKO VESKO"});
+          .doc(todoid)
+          .update({"content": "aaa"});
+      
     } catch (e) {
       rethrow;
     }
   }
 
-  Future<void> deleteTodo() async {
+  Future<void> deleteTodo(String uid, String todoid) async {
     try {
+      print(uid);
       await FirebaseFirestore.instance
           .collection("users")
-          .doc("djovanidjovani123")
+          .doc(uid)
           .collection("todos")
-          .doc("3sNCR3fmgEvjMwjYmiyG")
+          .doc(todoid)
           .delete();
     } catch (e) {
       rethrow;
@@ -73,7 +77,6 @@ class HomePage extends StatelessWidget {
       for (var element in query.docs) {
         retVal.add(Todo.fromDocumentSnapshot(element));
       }
-      print(retVal);
       return retVal;
     });
   }
@@ -97,9 +100,9 @@ class HomePage extends StatelessWidget {
             Text(context.select((AppBloc bloc) => bloc.state.user.id)),
             TextButton(
                 child: const Text('TASK'), onPressed: () => addTodo(uid)),
-            TextButton(child: const Text('EDIT'), onPressed: () => editTodo()),
-            TextButton(
-                child: const Text('DELETE'), onPressed: () => deleteTodo()),
+            TextButton(child: const Text('EDIT'), onPressed: () => editTodo('Llu4NvjLUjcilGfyxXJktST8MBo2', 'HEf2Ggkuv4GOPUyB5pnS')),
+            // TextButton(
+            //     child: const Text('DELETE'), onPressed: () => deleteTodo()),
             SizedBox(
               height: 60,
               width: 300,
@@ -128,15 +131,22 @@ class HomePage extends StatelessWidget {
                     builder: (BuildContext context,
                         AsyncSnapshot<QuerySnapshot> snapshot) {
                       if (snapshot.hasData) {
-                        final snap = snapshot.data!.docs;
-                        return ListView.builder(
+                       
+                        return ListView(
                           shrinkWrap: true,
                           primary: false,
-                          itemCount: snap.length,
-                          itemBuilder: (context, index) {
-                            return TodoTile();
-                          },
+                          children: snapshot.data!.docs.map((DocumentSnapshot document)  {
+                          //Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
+                        
+                          return ListTile(
+                            leading:  IconButton(onPressed:()=> deleteTodo(uid, document.id), icon:Icon(Icons.delete)),
+                            title: Text(document['content']),
+                            onTap: ()  => 
+                             editTodo(uid, document.id)
+                          );
+                        }).toList(),
                         );
+                        
                       } else {
                         return const SizedBox();
                       }
@@ -148,4 +158,12 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
+
+  
+  vesko(String uid, String todoId) async {
+ 
+  await editTodo(uid, todoId);
+}
+
+
 }

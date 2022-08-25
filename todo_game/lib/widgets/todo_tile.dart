@@ -3,19 +3,21 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
 class TodoTile extends StatelessWidget {
-  const TodoTile({Key? key}) : super(key: key);
+
+
+  TodoTile({Key? key, }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 10.0),
+      padding:  EdgeInsets.only(left: 10.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Expanded(
-            child: Text('YO DOG WHATSUP'),
+           Expanded(
+            child: Text("AA"),
           ),
-          const Checkbox(
+           Checkbox(
             onChanged: null,
             value: true,
           )
