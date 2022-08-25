@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_game/bloc/app_bloc.dart';
 import 'package:todo_game/models/todo.dart';
-import 'package:todo_game/widgets/todo_tile.dart';
 
 class HomePage extends StatelessWidget {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -13,16 +12,16 @@ class HomePage extends StatelessWidget {
   }) : super(key: key);
   static Page<void> page() => MaterialPage<void>(
           child: HomePage(
-        tasksList: [
-          Todo('dasad', 'ds', false),
-          Todo('dasad', 'ds', false),
-          Todo('dasad', 'ds', false),
-        ],
-      )); 
+        tasksList: [],
+      ));
   final TextEditingController _todoController = TextEditingController();
+  final TextEditingController _categoryController = TextEditingController();
+
+  final TextEditingController _todoEditController = TextEditingController();
+  final TextEditingController _categoryEditController = TextEditingController();
   final List<Todo> tasksList;
 
-  Future<void> addTodo(String uid) async {
+  Future<void> firebaseAdd(String uid) async {
     try {
       await FirebaseFirestore.instance
           .collection("users")
@@ -30,23 +29,25 @@ class HomePage extends StatelessWidget {
           .collection("todos")
           .add({
         'content': _todoController.text,
-        'done': false,
-        'uid':uid
+        'category': _categoryController.text,
+        'done': false
       });
     } catch (e) {
       rethrow;
     }
   }
 
-  Future<void> editTodo(String uid, String todoid) async {
+  Future<void> firebaseEdit(String uid, String todoid) async {
     try {
       await FirebaseFirestore.instance
           .collection("users")
           .doc(uid)
           .collection("todos")
           .doc(todoid)
-          .update({"content": "aaa"});
-      
+          .update({
+        'content': _todoEditController.text,
+        'category': _categoryEditController.text,
+      });
     } catch (e) {
       rethrow;
     }
@@ -54,7 +55,6 @@ class HomePage extends StatelessWidget {
 
   Future<void> deleteTodo(String uid, String todoid) async {
     try {
-      print(uid);
       await FirebaseFirestore.instance
           .collection("users")
           .doc(uid)
@@ -81,46 +81,177 @@ class HomePage extends StatelessWidget {
     });
   }
 
+  Future<void> updateTodo(bool newValue, String uid, String todoId) async {
+    try {
+      FirebaseFirestore.instance
+          .collection("users")
+          .doc(uid)
+          .collection("todos")
+          .doc(todoId)
+          .update({"done": newValue});
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final uid = context.select((AppBloc bloc) => bloc.state.user.id);
 
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Center(
-        child: Column(
-          children: [
-            const SizedBox(
-              height: 200,
-            ),
-            TextButton(
-                child: const Text('Log Out'),
-                onPressed: () =>
-                    context.read<AppBloc>().add(AppLogoutRequested())),
-            Text(context.select((AppBloc bloc) => bloc.state.user.id)),
-            TextButton(
-                child: const Text('TASK'), onPressed: () => addTodo(uid)),
-            TextButton(child: const Text('EDIT'), onPressed: () => editTodo('Llu4NvjLUjcilGfyxXJktST8MBo2', 'HEf2Ggkuv4GOPUyB5pnS')),
-            // TextButton(
-            //     child: const Text('DELETE'), onPressed: () => deleteTodo()),
-            SizedBox(
-              height: 60,
-              width: 300,
-              child: TextField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20.0),
+    void addTodo(BuildContext context) {
+      showModalBottomSheet(
+        backgroundColor: Colors.grey.withOpacity(0.5),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        context: context,
+        builder: (context) => SingleChildScrollView(
+          child: Container(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                child: Column(children: [
+                  const Text(
+                    'Add Task',
+                    style: TextStyle(fontSize: 24),
                   ),
-                  filled: true,
-                  fillColor: const Color(0x33EBC4C4),
-                  hintText: 'Task',
-                  hintStyle:
-                      const TextStyle(fontSize: 24.0, color: Colors.white),
-                ),
-                controller: _todoController,
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  TextField(
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                      filled: true,
+                      fillColor: const Color(0x33EBC4C4),
+                      hintText: 'Task',
+                      hintStyle:
+                          const TextStyle(fontSize: 20.0, color: Colors.white),
+                    ),
+                    controller: _todoController,
+                  ),
+                  const SizedBox(height: 15),
+                  TextField(
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                      filled: true,
+                      fillColor: const Color(0x33EBC4C4),
+                      hintText: 'Category',
+                      hintStyle:
+                          const TextStyle(fontSize: 20.0, color: Colors.white),
+                    ),
+                    controller: _categoryController,
+                  ),
+                  const SizedBox(height: 15),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: const Color(0xFF661f4f),
+                    ),
+                    onPressed: () {
+                      firebaseAdd(uid);
+                      _todoController.clear();
+                      _categoryController.clear();
+                    },
+                    child: const Text('Add', style: TextStyle(fontSize: 20.0)),
+                  ),
+                ]),
+              )),
+        ),
+      );
+    }
+
+    void editTodo(BuildContext context, String uid, String todoId) {
+      showModalBottomSheet(
+        backgroundColor: Colors.grey.withOpacity(0.5),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        context: context,
+        builder: (context) => SingleChildScrollView(
+          child: Container(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                child: Column(children: [
+                  const Text(
+                    'Edit Task',
+                    style: TextStyle(fontSize: 24),
+                  ),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  TextField(
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                      filled: true,
+                      fillColor: const Color(0x33EBC4C4),
+                      hintText: 'Edit Task',
+                      hintStyle:
+                          const TextStyle(fontSize: 20.0, color: Colors.white),
+                    ),
+                    controller: _todoEditController,
+                  ),
+                  const SizedBox(height: 15),
+                  TextField(
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                      filled: true,
+                      fillColor: const Color(0x33EBC4C4),
+                      hintText: 'Edit Category',
+                      hintStyle:
+                          const TextStyle(fontSize: 20.0, color: Colors.white),
+                    ),
+                    controller: _categoryEditController,
+                  ),
+                  const SizedBox(height: 15),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: const Color(0xFF661f4f),
+                    ),
+                    onPressed: () {
+                      firebaseEdit(uid, todoId);
+                      _todoEditController.clear();
+                      _categoryEditController.clear();
+                    },
+                    child: const Text('Edit', style: TextStyle(fontSize: 20.0)),
+                  ),
+                ]),
+              )),
+        ),
+      );
+    }
+
+    return Scaffold(
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => addTodo(context),
+          backgroundColor: Colors.grey.withOpacity(0.2),
+          child: const Icon(Icons.add_circle_outline,
+              size: 50.0, color: Colors.white),
+        ),
+        body: Stack(children: [
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/BackGroundSpace.png'),
+                fit: BoxFit.cover,
               ),
             ),
-            SingleChildScrollView(
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 200),
+            child: SingleChildScrollView(
               child: Column(children: [
                 StreamBuilder<QuerySnapshot>(
                     stream: FirebaseFirestore.instance
@@ -131,39 +262,65 @@ class HomePage extends StatelessWidget {
                     builder: (BuildContext context,
                         AsyncSnapshot<QuerySnapshot> snapshot) {
                       if (snapshot.hasData) {
-                       
                         return ListView(
+                          physics: const NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
-                          primary: false,
-                          children: snapshot.data!.docs.map((DocumentSnapshot document)  {
-                          //Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
-                        
-                          return ListTile(
-                            leading:  IconButton(onPressed:()=> deleteTodo(uid, document.id), icon:Icon(Icons.delete)),
-                            title: Text(document['content']),
-                            onTap: ()  => 
-                             editTodo(uid, document.id)
-                          );
-                        }).toList(),
+                          children: snapshot.data!.docs
+                              .map((DocumentSnapshot document) {
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 10.0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                  color: Colors.grey.withOpacity(0.2),
+                                ),
+                                child: ListTile(
+                                  leading: IconButton(
+                                      onPressed: () =>
+                                          deleteTodo(uid, document.id),
+                                      icon: const Icon(Icons.delete)),
+                                  title: Text(document['content']),
+                                  subtitle: Text(document['category']),
+                                  onTap: () =>
+                                      editTodo(context, uid, document.id),
+                                  trailing: Container(
+                                    height: 30.0,
+                                    width: 30.0,
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: Colors.white, width: 2),
+                                        borderRadius: const BorderRadius.all(
+                                          Radius.circular(5),
+                                        )),
+                                    child: Theme(
+                                      data: ThemeData(
+                                          unselectedWidgetColor:
+                                              Colors.transparent),
+                                      child: Checkbox(
+                                        fillColor: MaterialStateProperty.all(
+                                            Colors.transparent),
+                                        activeColor: Colors.transparent,
+                                        checkColor: Colors.white,
+                                        value: document['done'],
+                                        onChanged: (newValue) => updateTodo(
+                                            newValue ?? false,
+                                            uid,
+                                            document.id),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
                         );
-                        
                       } else {
                         return const SizedBox();
                       }
                     })
               ]),
             ),
-          ],
-        ),
-      ),
-    );
+          ),
+        ]));
   }
-
-  
-  vesko(String uid, String todoId) async {
- 
-  await editTodo(uid, todoId);
-}
-
-
 }
