@@ -8,9 +8,11 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Colors.black,
-      body: Center(child: Text('Veljko')),
+    return Scaffold(
+      backgroundColor: const Color(0xFF661f4f),
+      body: Padding(
+        padding: const EdgeInsets.all(8),
+      ),
     );
   }
 }

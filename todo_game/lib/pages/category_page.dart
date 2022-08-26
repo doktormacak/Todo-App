@@ -3,29 +3,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_game/bloc/app_bloc.dart';
 import 'package:todo_game/models/todo.dart';
-import 'package:todo_game/pages/category_page.dart';
-import 'package:todo_game/pages/profile_page.dart';
 
-class HomePage extends StatelessWidget {
+class CategoryPage extends StatelessWidget {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
-  final GlobalKey<ScaffoldState> _key = GlobalKey();
-  HomePage({
+  CategoryPage({
     Key? key,
+    required this.prop,
   }) : super(key: key);
-  static Page<void> page() => MaterialPage<void>(child: HomePage());
   final TextEditingController _todoController = TextEditingController();
   final TextEditingController _categoryController = TextEditingController();
 
   final TextEditingController _todoEditController = TextEditingController();
-  final TextEditingController _categoryEditController = TextEditingController();
+
+  final prop;
 
   Future<void> firebaseAdd(String uid) async {
     try {
-      await firestore.collection("users").doc(uid).collection("todos").add({
-        'content': _todoController.text,
-        'category': _categoryController.text,
-        'done': false
-      });
+      await firestore.collection("users").doc(uid).collection("todos").add(
+          {'content': _todoController.text, 'category': prop, 'done': false});
     } catch (e) {
       rethrow;
     }
@@ -40,7 +35,7 @@ class HomePage extends StatelessWidget {
           .doc(todoid)
           .update({
         'content': _todoEditController.text,
-        'category': _categoryEditController.text,
+        'category': prop,
       });
     } catch (e) {
       rethrow;
@@ -85,6 +80,7 @@ class HomePage extends StatelessWidget {
           .doc(todoId)
           .update({"done": newValue});
     } catch (e) {
+      print(e);
       rethrow;
     }
   }
@@ -92,7 +88,6 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final uid = context.select((AppBloc bloc) => bloc.state.user.id);
-    final email = context.select((AppBloc bloc) => bloc.state.user.email);
 
     void addTodo(BuildContext context) {
       showModalBottomSheet(
@@ -128,20 +123,6 @@ class HomePage extends StatelessWidget {
                           const TextStyle(fontSize: 20.0, color: Colors.white),
                     ),
                     controller: _todoController,
-                  ),
-                  const SizedBox(height: 15),
-                  TextField(
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
-                      filled: true,
-                      fillColor: const Color(0x33EBC4C4),
-                      hintText: 'Category',
-                      hintStyle:
-                          const TextStyle(fontSize: 20.0, color: Colors.white),
-                    ),
-                    controller: _categoryController,
                   ),
                   const SizedBox(height: 15),
                   ElevatedButton(
@@ -197,20 +178,6 @@ class HomePage extends StatelessWidget {
                     controller: _todoEditController,
                   ),
                   const SizedBox(height: 15),
-                  TextField(
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
-                      filled: true,
-                      fillColor: const Color(0x33EBC4C4),
-                      hintText: 'Edit Category',
-                      hintStyle:
-                          const TextStyle(fontSize: 20.0, color: Colors.white),
-                    ),
-                    controller: _categoryEditController,
-                  ),
-                  const SizedBox(height: 15),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       primary: const Color(0xFF661f4f),
@@ -218,7 +185,6 @@ class HomePage extends StatelessWidget {
                     onPressed: () {
                       firebaseEdit(uid, todoId);
                       _todoEditController.clear();
-                      _categoryEditController.clear();
                     },
                     child: const Text('Edit', style: TextStyle(fontSize: 20.0)),
                   ),
@@ -229,82 +195,6 @@ class HomePage extends StatelessWidget {
     }
 
     return Scaffold(
-        key: _key,
-        drawer: Drawer(
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-                topRight: Radius.circular(30),
-                bottomRight: Radius.circular(30)),
-          ),
-          backgroundColor: Colors.black.withOpacity(0.3),
-          child: Padding(
-            padding: const EdgeInsets.only(
-                top: 20.0, bottom: 20.0, left: 10.0, right: 10.0),
-            child: SingleChildScrollView(
-              child: Column(children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 30.0),
-                  child: Column(
-                    children: [
-                      IconButton(
-                          icon: const Icon(Icons.account_circle,
-                              color: Colors.white, size: 50.0),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) {
-                                return ProfilePage();
-                              }),
-                            );
-                          }),
-                      const SizedBox(height: 15.0),
-                      Text(email ?? ''),
-                    ],
-                  ),
-                ),
-                StreamBuilder<List<String?>>(
-                    stream: todoStream(uid),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<List<String?>> snapshot) {
-                      if (snapshot.hasData) {
-                        return ListView(
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          children: snapshot.data!.map((document) {
-                            return Padding(
-                              padding: const EdgeInsets.only(top: 10.0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20.0),
-                                  color:
-                                      const Color(0xFF661f4f).withOpacity(0.7),
-                                ),
-                                child: ListTile(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) {
-                                        return CategoryPage(
-                                            prop: document!.toLowerCase());
-                                      }),
-                                    );
-                                    _key.currentState!.closeDrawer();
-                                  },
-                                  title: Center(
-                                      child: Text(document!.toUpperCase())),
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        );
-                      } else {
-                        return const SizedBox();
-                      }
-                    }),
-              ]),
-            ),
-          ),
-        ),
         floatingActionButton: FloatingActionButton(
           onPressed: () => addTodo(context),
           backgroundColor: Colors.grey.withOpacity(0.2),
@@ -326,11 +216,11 @@ class HomePage extends StatelessWidget {
             child: FloatingActionButton(
                 backgroundColor: Colors.grey.withOpacity(0.2),
                 child: const Icon(
-                  Icons.menu,
+                  Icons.arrow_back,
                   size: 50.0,
                   color: Colors.white,
                 ),
-                onPressed: () => _key.currentState!.openDrawer()),
+                onPressed: () => {Navigator.pop(context)}),
           ),
           Padding(
             padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 200),
@@ -341,6 +231,7 @@ class HomePage extends StatelessWidget {
                         .collection("users")
                         .doc(uid)
                         .collection("todos")
+                        .where('category', isEqualTo: prop)
                         .snapshots(),
                     builder: (BuildContext context,
                         AsyncSnapshot<QuerySnapshot> snapshot) {
