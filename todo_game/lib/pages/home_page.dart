@@ -6,13 +6,14 @@ import 'package:todo_game/models/todo.dart';
 
 class HomePage extends StatelessWidget {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  final GlobalKey<ScaffoldState> _key = GlobalKey();
   HomePage({
     Key? key,
     required this.tasksList,
   }) : super(key: key);
   static Page<void> page() => MaterialPage<void>(
           child: HomePage(
-        tasksList: [],
+        tasksList: const [],
       ));
   final TextEditingController _todoController = TextEditingController();
   final TextEditingController _categoryController = TextEditingController();
@@ -234,6 +235,76 @@ class HomePage extends StatelessWidget {
     }
 
     return Scaffold(
+        key: _key,
+        drawer: Drawer(
+          child: SingleChildScrollView(
+            child: Column(children: [
+              StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection("users")
+                      .doc(uid)
+                      .collection("todos")
+                      .snapshots(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.hasData) {
+                      return ListView(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        children: snapshot.data!.docs
+                            .map((DocumentSnapshot document) {
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 10.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20.0),
+                                color: Colors.grey.withOpacity(0.2),
+                              ),
+                              child: ListTile(
+                                leading: IconButton(
+                                    onPressed: () => print(snapshot.data!.docs),
+                                    // deleteTodo(uid, document.id),
+                                    icon: const Icon(Icons.delete)),
+                                title: Text(document['content']),
+                                subtitle: Text(document['category']),
+                                onTap: () =>
+                                    editTodo(context, uid, document.id),
+                                trailing: Container(
+                                  height: 30.0,
+                                  width: 30.0,
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: Colors.white, width: 2),
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(5),
+                                      )),
+                                  child: Theme(
+                                    data: ThemeData(
+                                        unselectedWidgetColor:
+                                            Colors.transparent),
+                                    child: Checkbox(
+                                      fillColor: MaterialStateProperty.all(
+                                          Colors.transparent),
+                                      activeColor: Colors.transparent,
+                                      checkColor: Colors.white,
+                                      value: document['done'],
+                                      onChanged: (newValue) => updateTodo(
+                                          newValue ?? false, uid, document.id),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      );
+                    } else {
+                      return const SizedBox();
+                    }
+                  }),
+            ]),
+          ),
+        ),
         floatingActionButton: FloatingActionButton(
           onPressed: () => addTodo(context),
           backgroundColor: Colors.grey.withOpacity(0.2),
@@ -248,6 +319,18 @@ class HomePage extends StatelessWidget {
                 fit: BoxFit.cover,
               ),
             ),
+          ),
+          Positioned(
+            top: 75,
+            left: 15,
+            child: FloatingActionButton(
+                backgroundColor: Colors.grey.withOpacity(0.2),
+                child: const Icon(
+                  Icons.menu,
+                  size: 50.0,
+                  color: Colors.white,
+                ),
+                onPressed: () => _key.currentState!.openDrawer()),
           ),
           Padding(
             padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 200),
@@ -317,7 +400,7 @@ class HomePage extends StatelessWidget {
                       } else {
                         return const SizedBox();
                       }
-                    })
+                    }),
               ]),
             ),
           ),
