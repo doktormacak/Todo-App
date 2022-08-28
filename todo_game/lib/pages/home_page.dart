@@ -255,31 +255,37 @@ class HomePage extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(builder: (context) {
-                                return ProfilePage(email:email);
+                                return ProfilePage(email: email);
                               }),
                             );
                             _key.currentState!.closeDrawer();
                           }),
                       const SizedBox(height: 15.0),
                       Center(child: Text(email ?? '')),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       Container(
-                        height:50,
-                        width:100,
-                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(20.0), color:  const Color(0xFF661f4f).withOpacity(0.7)),
-                        child: Center(child: RichText(text:TextSpan(children:<TextSpan> [TextSpan(text:"DONE", recognizer: TapGestureRecognizer() 
-                            ..onTap = () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) {
-                                return DonePage();
-                              }),
-                            );
-                            _key.currentState!.closeDrawer();
-                         },
-                )])))
-                      ),
-
+                          height: 50,
+                          width: 100,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20.0),
+                              color: const Color(0xFF661f4f).withOpacity(0.7)),
+                          child: Center(
+                              child: RichText(
+                                  text: TextSpan(children: <TextSpan>[
+                            TextSpan(
+                              text: "DONE",
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) {
+                                      return DonePage();
+                                    }),
+                                  );
+                                  _key.currentState!.closeDrawer();
+                                },
+                            )
+                          ])))),
                     ],
                   ),
                 ),
@@ -402,19 +408,23 @@ class HomePage extends StatelessWidget {
                                           unselectedWidgetColor:
                                               Colors.transparent),
                                       child: Checkbox(
-                                        fillColor: MaterialStateProperty.all(
-                                            Colors.transparent),
-                                        activeColor: Colors.transparent,
-                                        checkColor: Colors.white,
-                                        value: document['done'],
-                                         onChanged: (newValue) =>  Future.delayed(Duration(milliseconds: 100), () {
-                                                    vesko(newValue, uid, document.id);
-                                                                })
-                                         //updateTodo(
-                                        //     newValue ?? false,
-                                        //     uid,
-                                        //     document.id),
-                                      ),
+                                          fillColor: MaterialStateProperty.all(
+                                              Colors.transparent),
+                                          activeColor: Colors.transparent,
+                                          checkColor: Colors.white,
+                                          value: document['done'],
+                                          onChanged: (newValue) =>
+                                              Future.delayed(
+                                                  Duration(milliseconds: 100),
+                                                  () {
+                                                vesko(
+                                                    newValue, uid, document.id);
+                                              })
+                                          //updateTodo(
+                                          //     newValue ?? false,
+                                          //     uid,
+                                          //     document.id),
+                                          ),
                                     ),
                                   ),
                                 ),
@@ -423,7 +433,8 @@ class HomePage extends StatelessWidget {
                           }).toList(),
                         );
                       } else {
-                        return const Center(child: Text("Unesi svoje taskovee"));
+                        return const Center(
+                            child: Text("Unesi svoje taskovee"));
                       }
                     }),
               ]),
@@ -432,7 +443,7 @@ class HomePage extends StatelessWidget {
         ]));
   }
 
-  vesko(newValue, uid, document){
+  vesko(newValue, uid, document) {
     updateTodo(newValue ?? false, uid, document);
   }
 }
