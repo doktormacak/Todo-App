@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_game/bloc/app_bloc.dart';
 import 'package:todo_game/models/todo.dart';
 import 'package:todo_game/pages/category_page.dart';
+import 'package:todo_game/pages/done_page.dart';
 import 'package:todo_game/pages/profile_page.dart';
 
 class HomePage extends StatelessWidget {
@@ -253,12 +255,31 @@ class HomePage extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(builder: (context) {
-                                return ProfilePage();
+                                return ProfilePage(email:email);
                               }),
                             );
+                            _key.currentState!.closeDrawer();
                           }),
                       const SizedBox(height: 15.0),
-                      Text(email ?? ''),
+                      Center(child: Text(email ?? '')),
+                      SizedBox(height: 20),
+                      Container(
+                        height:50,
+                        width:100,
+                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(20.0), color:  const Color(0xFF661f4f).withOpacity(0.7)),
+                        child: Center(child: RichText(text:TextSpan(children:<TextSpan> [TextSpan(text:"DONE", recognizer: TapGestureRecognizer() 
+                            ..onTap = () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) {
+                                return DonePage();
+                              }),
+                            );
+                            _key.currentState!.closeDrawer();
+                         },
+                )])))
+                      ),
+
                     ],
                   ),
                 ),
@@ -341,6 +362,7 @@ class HomePage extends StatelessWidget {
                         .collection("users")
                         .doc(uid)
                         .collection("todos")
+                        .where("done", isEqualTo: false)
                         .snapshots(),
                     builder: (BuildContext context,
                         AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -385,10 +407,13 @@ class HomePage extends StatelessWidget {
                                         activeColor: Colors.transparent,
                                         checkColor: Colors.white,
                                         value: document['done'],
-                                        onChanged: (newValue) => updateTodo(
-                                            newValue ?? false,
-                                            uid,
-                                            document.id),
+                                         onChanged: (newValue) =>  Future.delayed(Duration(milliseconds: 100), () {
+                                                    vesko(newValue, uid, document.id);
+                                                                })
+                                         //updateTodo(
+                                        //     newValue ?? false,
+                                        //     uid,
+                                        //     document.id),
                                       ),
                                     ),
                                   ),
@@ -398,12 +423,16 @@ class HomePage extends StatelessWidget {
                           }).toList(),
                         );
                       } else {
-                        return const SizedBox();
+                        return const Center(child: Text("Unesi svoje taskovee"));
                       }
                     }),
               ]),
             ),
           ),
         ]));
+  }
+
+  vesko(newValue, uid, document){
+    updateTodo(newValue ?? false, uid, document);
   }
 }
