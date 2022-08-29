@@ -10,6 +10,10 @@ class RecoverPasswordButton extends StatelessWidget {
     return TextButton(
       key: const Key('loginForm_createAccount_flatButton'),
       onPressed: () => showModalBottomSheet(
+        backgroundColor: Colors.grey.withOpacity(0.5),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
         context: context,
         builder: (context) => SingleChildScrollView(
           child: Container(
@@ -21,15 +25,33 @@ class RecoverPasswordButton extends StatelessWidget {
               child: Column(
                 children: [
                   TextField(
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                      filled: true,
+                      fillColor: const Color(0x33EBC4C4),
+                      hintText: 'Email',
+                      hintStyle:
+                          const TextStyle(fontSize: 20.0, color: Colors.white),
+                    ),
                     controller: _passwordResetController,
                   ),
-                  TextButton(
-                      child: const Text('Reset Password'),
-                      onPressed: () async {
-                        await FirebaseAuth.instance.sendPasswordResetEmail(
-                            email: _passwordResetController.text);
-                        _passwordResetController.clear();
-                      }),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: const Color(0xFF661f4f),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12), // <-- Radius
+                      ),
+                    ),
+                    onPressed: () async {
+                      await FirebaseAuth.instance.sendPasswordResetEmail(
+                          email: _passwordResetController.text);
+                      _passwordResetController.clear();
+                    },
+                    child: const Text('Reset Email',
+                        style: TextStyle(fontSize: 20.0)),
+                  ),
                 ],
               ),
             ),

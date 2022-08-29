@@ -1,5 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
+
+import 'package:todo_game/widgets/chart.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 
@@ -8,9 +11,14 @@ class ProfilePage extends StatelessWidget {
       Uri.parse("https://opensea.io/collection/artvistafirstexposition");
 
   final email;
+  var completedLen;
+  var activeLen;
+
   ProfilePage({
     Key? key,
     required this.email,
+    required this.activeLen,
+    required this.completedLen,
   }) : super(key: key);
 
   Future<void> signOut() async {
@@ -64,14 +72,7 @@ class ProfilePage extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20.0),
                   color: Colors.black.withOpacity(0.2)),
               child: Center(child: Text(email))),
-          const SizedBox(height: 20),
-          Container(
-              height: 50,
-              width: 200,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20.0),
-                  color: Colors.black.withOpacity(0.2)),
-              child: const Center(child: Text("Username"))),
+
           const SizedBox(height: 20),
           Center(
             child: InkWell(
@@ -82,11 +83,15 @@ class ProfilePage extends StatelessWidget {
               child: const Text("Log out"),
             ),
           ),
-
-          //InkWell(
-          //   child: const Text("Open NFT"),
-          //   onTap:() => _launchUrl()
-          // ),
+          const SizedBox(height: 50),
+          SizedBox(
+            height: 400,
+            width: 320,
+            child: PieChartSample2(
+              activeLen: activeLen,
+              completedLen: completedLen,
+            ),
+          ),
         ],
       ),
     );

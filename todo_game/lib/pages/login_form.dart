@@ -25,24 +25,39 @@ class LoginForm extends StatelessWidget {
             );
         }
       },
-      child: Align(
-        alignment: const Alignment(0, -1 / 3),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(height: 16),
-              EmailInput(),
-              const SizedBox(height: 8),
-              PasswordInput(),
-              const SizedBox(height: 8),
-              LoginButton(),
-              const SizedBox(height: 4),
-              SignUpButton(),
-              const SizedBox(height: 4),
-              RecoverPasswordButton(),
-            ],
-          ),
+      child: Scaffold(
+        backgroundColor: const Color(0xFF661f4f),
+        resizeToAvoidBottomInset: false,
+        body: Column(
+          children: [
+            const SizedBox(height: 100),
+            SizedBox(
+              child: Column(
+                children: const [
+                  Icon(
+                    Icons.rocket_launch_outlined,
+                    color: Colors.white,
+                    size: 100,
+                  ),
+                  Text('NFTODO',
+                      style: TextStyle(
+                        fontSize: 36.0,
+                        fontWeight: FontWeight.bold,
+                      ))
+                ],
+              ),
+            ),
+            const SizedBox(height: 50),
+            const EmailInput(),
+            const SizedBox(height: 50),
+            const PasswordInput(),
+            const SizedBox(height: 50),
+            const LoginButton(),
+            const SizedBox(height: 50),
+            const SignUpButton(),
+            const SizedBox(height: 5),
+            RecoverPasswordButton(),
+          ],
         ),
       ),
     );

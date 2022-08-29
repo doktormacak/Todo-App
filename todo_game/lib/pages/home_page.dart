@@ -21,6 +21,9 @@ class HomePage extends StatelessWidget {
   final TextEditingController _todoEditController = TextEditingController();
   final TextEditingController _categoryEditController = TextEditingController();
 
+  var activeLen;
+  var completedLen;
+
   Future<void> firebaseAdd(String uid) async {
     try {
       await firestore.collection("users").doc(uid).collection("todos").add({
@@ -149,6 +152,9 @@ class HomePage extends StatelessWidget {
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       primary: const Color(0xFF661f4f),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12), // <-- Radius
+                      ),
                     ),
                     onPressed: () {
                       firebaseAdd(uid);
@@ -255,7 +261,10 @@ class HomePage extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(builder: (context) {
-                                return ProfilePage(email: email);
+                                return ProfilePage(
+                                    email: email,
+                                    activeLen: activeLen,
+                                    completedLen: completedLen);
                               }),
                             );
                             _key.currentState!.closeDrawer();
@@ -328,6 +337,24 @@ class HomePage extends StatelessWidget {
                         return const SizedBox();
                       }
                     }),
+                StreamBuilder<QuerySnapshot>(
+                    stream: firestore
+                        .collection("users")
+                        .doc(uid)
+                        .collection("todos")
+                        .where("done", isEqualTo: true)
+                        .snapshots(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<QuerySnapshot> snapshot) {
+                      if (snapshot.hasData) {
+                        completedLen = snapshot.data!.docs.length;
+                        return SizedBox();
+                      } else {
+                        return SizedBox(
+                          height: 20,
+                        );
+                      }
+                    }),
               ]),
             ),
           ),
@@ -373,6 +400,7 @@ class HomePage extends StatelessWidget {
                     builder: (BuildContext context,
                         AsyncSnapshot<QuerySnapshot> snapshot) {
                       if (snapshot.hasData) {
+                        activeLen = snapshot.data!.docs.length;
                         return ListView(
                           physics: const NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
@@ -391,7 +419,6 @@ class HomePage extends StatelessWidget {
                                           deleteTodo(uid, document.id),
                                       icon: const Icon(Icons.delete)),
                                   title: Text(document['content']),
-                                  subtitle: Text(document['category']),
                                   onTap: () =>
                                       editTodo(context, uid, document.id),
                                   trailing: Container(
@@ -404,28 +431,20 @@ class HomePage extends StatelessWidget {
                                           Radius.circular(5),
                                         )),
                                     child: Theme(
-                                      data: ThemeData(
-                                          unselectedWidgetColor:
-                                              Colors.transparent),
-                                      child: Checkbox(
+                                        data: ThemeData(
+                                            unselectedWidgetColor:
+                                                Colors.transparent),
+                                        child: Checkbox(
                                           fillColor: MaterialStateProperty.all(
                                               Colors.transparent),
                                           activeColor: Colors.transparent,
                                           checkColor: Colors.white,
                                           value: document['done'],
-                                          onChanged: (newValue) =>
-                                              Future.delayed(
-                                                  Duration(milliseconds: 100),
-                                                  () {
-                                                vesko(
-                                                    newValue, uid, document.id);
-                                              })
-                                          //updateTodo(
-                                          //     newValue ?? false,
-                                          //     uid,
-                                          //     document.id),
-                                          ),
-                                    ),
+                                          onChanged: (newValue) => updateTodo(
+                                              newValue ?? false,
+                                              uid,
+                                              document.id),
+                                        )),
                                   ),
                                 ),
                               ),
@@ -441,9 +460,5 @@ class HomePage extends StatelessWidget {
             ),
           ),
         ]));
-  }
-
-  vesko(newValue, uid, document) {
-    updateTodo(newValue ?? false, uid, document);
   }
 }
