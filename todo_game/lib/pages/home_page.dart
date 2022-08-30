@@ -1,12 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rive/rive.dart';
 import 'package:todo_game/bloc/app_bloc.dart';
 import 'package:todo_game/models/todo.dart';
 import 'package:todo_game/pages/category_page.dart';
 import 'package:todo_game/pages/done_page.dart';
 import 'package:todo_game/pages/profile_page.dart';
+import 'package:todo_game/widgets/animation1.dart';
 
 class HomePage extends StatelessWidget {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -423,13 +424,8 @@ class HomePage extends StatelessWidget {
               size: 50.0, color: Colors.white),
         ),
         body: Stack(children: [
-          Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/BackGroundSpace.png'),
-                fit: BoxFit.cover,
-              ),
-            ),
+          SizedBox(
+            child: SimpleAnimation1(),
           ),
           Positioned(
             top: 75,
@@ -474,7 +470,11 @@ class HomePage extends StatelessWidget {
                                   leading: IconButton(
                                       onPressed: () =>
                                           deleteTodo(uid, document.id),
-                                      icon: const Icon(Icons.delete)),
+                                      icon: const Icon(
+                                        Icons.delete_outline_sharp,
+                                        color: Colors.white,
+                                        size: 30,
+                                      )),
                                   title: Text(document['content']),
                                   onTap: () =>
                                       editTodo(context, uid, document.id),

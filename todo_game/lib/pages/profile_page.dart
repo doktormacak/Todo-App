@@ -42,54 +42,72 @@ class ProfilePage extends StatelessWidget {
       ),
       backgroundColor: const Color(0xFF661f4f),
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Padding(
-            padding: EdgeInsets.only(
-              top: 60,
+          Container(
+            height: 75,
+            width: 250,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20.0),
+                color: Colors.black.withOpacity(0.2)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                    icon: const Icon(Icons.token,
+                        color: Colors.white, size: 40.0),
+                    onPressed: () {
+                      _launchUrl();
+                    }),
+                const SizedBox(width: 10),
+                Column(
+                  children: [
+                    const SizedBox(height: 30),
+                    const Text("NFT STORE",
+                        style: TextStyle(
+                            fontSize: 20.0, fontWeight: FontWeight.bold)),
+                  ],
+                ),
+              ],
             ),
-            child: Center(
-                child: Text("NFT STORE",
-                    style: TextStyle(
-                        fontSize: 20.0, fontWeight: FontWeight.bold))),
           ),
-          const SizedBox(height: 5),
-          IconButton(
-              icon: const Icon(Icons.token, color: Colors.white, size: 50.0),
-              onPressed: () {
-                _launchUrl();
-              }),
-          // InkWell(
-          //   child: const Text("Open NFT"),
-          //   onTap:() => _launchUrl()
-          // ),
-
           const SizedBox(height: 30.0),
           Container(
-              height: 50,
-              //TODO Treba nekako da se siri ovo uz tekst ali se ne mogu setit sanse nema jer mi expanded poludi
+              height: 70,
               width: 200,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20.0),
                   color: Colors.black.withOpacity(0.2)),
               child: Center(child: Text(email))),
-
           const SizedBox(height: 20),
+          SizedBox(
+            height: 200,
+            width: 320,
+            child: PieChartSample2(
+              activeLen: activeLen,
+              completedLen: completedLen,
+            ),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
           Center(
             child: InkWell(
               onTap: (() {
                 signOut();
                 Navigator.pop(context);
               }),
-              child: const Text("Log out"),
-            ),
-          ),
-          const SizedBox(height: 50),
-          SizedBox(
-            height: 400,
-            width: 320,
-            child: PieChartSample2(
-              activeLen: activeLen,
-              completedLen: completedLen,
+              child: Container(
+                height: 60,
+                width: MediaQuery.of(context).size.width * 0.65,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: Colors.white, width: 3)),
+                child: const Center(
+                  child: Text('Log Out',
+                      style: TextStyle(fontSize: 24, color: Colors.white)),
+                ),
+              ),
             ),
           ),
         ],

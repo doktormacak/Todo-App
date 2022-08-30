@@ -29,8 +29,8 @@ class LoginForm extends StatelessWidget {
         backgroundColor: const Color(0xFF661f4f),
         resizeToAvoidBottomInset: false,
         body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const SizedBox(height: 100),
             SizedBox(
               child: Column(
                 children: const [
