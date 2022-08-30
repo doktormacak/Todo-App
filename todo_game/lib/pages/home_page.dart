@@ -247,96 +247,153 @@ class HomePage extends StatelessWidget {
           backgroundColor: Colors.black.withOpacity(0.3),
           child: Padding(
             padding: const EdgeInsets.only(
-                top: 20.0, bottom: 20.0, left: 10.0, right: 10.0),
+                top: 20.0, bottom: 20, left: 10.0, right: 10.0),
             child: SingleChildScrollView(
               child: Column(children: [
                 Padding(
-                  padding: const EdgeInsets.only(top: 30.0),
+                  padding: const EdgeInsets.only(top: 50.0),
                   child: Column(
                     children: [
-                      IconButton(
-                          icon: const Icon(Icons.account_circle,
-                              color: Colors.white, size: 50.0),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) {
-                                return ProfilePage(
-                                    email: email,
-                                    activeLen: activeLen,
-                                    completedLen: completedLen);
-                              }),
-                            );
-                            _key.currentState!.closeDrawer();
-                          }),
-                      const SizedBox(height: 15.0),
-                      Center(child: Text(email ?? '')),
-                      const SizedBox(height: 20),
-                      Container(
-                          height: 50,
-                          width: 100,
+                      const Text('PROFILE'),
+                      const SizedBox(height: 10),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) {
+                              return ProfilePage(
+                                  email: email,
+                                  activeLen: activeLen,
+                                  completedLen: completedLen);
+                            }),
+                          );
+                          _key.currentState!.closeDrawer();
+                        },
+                        child: Container(
+                          height: 60,
                           decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20.0),
-                              color: const Color(0xFF661f4f).withOpacity(0.7)),
-                          child: Center(
-                              child: RichText(
-                                  text: TextSpan(children: <TextSpan>[
-                            TextSpan(
-                              text: "DONE",
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) {
-                                      return DonePage();
-                                    }),
-                                  );
-                                  _key.currentState!.closeDrawer();
-                                },
-                            )
-                          ])))),
+                            borderRadius: BorderRadius.circular(20.0),
+                            color: const Color(0xFF661f4f).withOpacity(0.7),
+                          ),
+                          child: Row(
+                            children: [
+                              const SizedBox(width: 20),
+                              const SizedBox(
+                                child: Icon(Icons.account_circle,
+                                    color: Colors.white, size: 40.0),
+                              ),
+                              const SizedBox(
+                                width: 20,
+                              ),
+                              Column(
+                                children: [
+                                  const SizedBox(height: 25),
+                                  Text(email ?? ''),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
-                StreamBuilder<List<String?>>(
-                    stream: todoStream(uid),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<List<String?>> snapshot) {
-                      if (snapshot.hasData) {
-                        return ListView(
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          children: snapshot.data!.map((document) {
-                            return Padding(
-                              padding: const EdgeInsets.only(top: 10.0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20.0),
-                                  color:
-                                      const Color(0xFF661f4f).withOpacity(0.7),
-                                ),
-                                child: ListTile(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) {
-                                        return CategoryPage(
-                                            prop: document!.toLowerCase());
-                                      }),
-                                    );
-                                    _key.currentState!.closeDrawer();
-                                  },
-                                  title: Center(
-                                      child: Text(document!.toUpperCase())),
-                                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 50.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) {
+                          return DonePage();
+                        }),
+                      );
+                      _key.currentState!.closeDrawer();
+                    },
+                    child: Container(
+                      height: 60,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20.0),
+                        color: const Color(0xFF661f4f).withOpacity(0.7),
+                      ),
+                      child: Row(
+                        children: [
+                          const SizedBox(width: 20),
+                          const SizedBox(
+                            child: Icon(Icons.library_add_check_outlined,
+                                color: Colors.white, size: 40.0),
+                          ),
+                          const SizedBox(
+                            width: 20,
+                          ),
+                          Column(
+                            children: const [
+                              SizedBox(height: 25),
+                              Text('COMPLETED TASKS'),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Column(
+                  children: [
+                    Column(
+                      children: const [
+                        SizedBox(height: 50),
+                        Text('CATEGORIES'),
+                      ],
+                    ),
+                    StreamBuilder<List<String?>>(
+                        stream: todoStream(uid),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<List<String?>> snapshot) {
+                          if (snapshot.hasData) {
+                            return MediaQuery.removePadding(
+                              context: context,
+                              removeTop: true,
+                              child: ListView(
+                                physics: const NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                children: snapshot.data!.map((document) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(top: 10.0),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(20.0),
+                                        color: const Color(0xFF661f4f)
+                                            .withOpacity(0.7),
+                                      ),
+                                      child: ListTile(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) {
+                                              return CategoryPage(
+                                                  prop:
+                                                      document!.toLowerCase());
+                                            }),
+                                          );
+                                          _key.currentState!.closeDrawer();
+                                        },
+                                        title: Center(
+                                            child:
+                                                Text(document!.toUpperCase())),
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
                               ),
                             );
-                          }).toList(),
-                        );
-                      } else {
-                        return const SizedBox();
-                      }
-                    }),
+                          } else {
+                            return const SizedBox();
+                          }
+                        }),
+                  ],
+                ),
                 StreamBuilder<QuerySnapshot>(
                     stream: firestore
                         .collection("users")
@@ -348,9 +405,9 @@ class HomePage extends StatelessWidget {
                         AsyncSnapshot<QuerySnapshot> snapshot) {
                       if (snapshot.hasData) {
                         completedLen = snapshot.data!.docs.length;
-                        return SizedBox();
+                        return const SizedBox();
                       } else {
-                        return SizedBox(
+                        return const SizedBox(
                           height: 20,
                         );
                       }
