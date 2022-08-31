@@ -9,21 +9,34 @@ import 'package:todo_game/pages/done_page.dart';
 import 'package:todo_game/pages/profile_page.dart';
 import 'package:todo_game/widgets/animation1.dart';
 
-class HomePage extends StatelessWidget {
-  final FirebaseFirestore firestore = FirebaseFirestore.instance;
-  final GlobalKey<ScaffoldState> _key = GlobalKey();
+class HomePage extends StatefulWidget {
   HomePage({
     Key? key,
   }) : super(key: key);
   static Page<void> page() => MaterialPage<void>(child: HomePage());
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  final GlobalKey<ScaffoldState> _key = GlobalKey();
+
   final TextEditingController _todoController = TextEditingController();
+
   final TextEditingController _categoryController = TextEditingController();
 
   final TextEditingController _todoEditController = TextEditingController();
+
   final TextEditingController _categoryEditController = TextEditingController();
 
   var activeLen;
+
   var completedLen;
+
+  var animationPhase = false;
 
   Future<void> firebaseAdd(String uid) async {
     try {
@@ -159,6 +172,7 @@ class HomePage extends StatelessWidget {
                     ),
                     onPressed: () {
                       firebaseAdd(uid);
+
                       _todoController.clear();
                       _categoryController.clear();
                     },
@@ -286,12 +300,9 @@ class HomePage extends StatelessWidget {
                               const SizedBox(
                                 width: 20,
                               ),
-                              Column(
-                                children: [
-                                  const SizedBox(height: 25),
-                                  Text(email ?? ''),
-                                ],
-                              ),
+                              Expanded(
+                                  child: Text(email ?? '',
+                                      overflow: TextOverflow.ellipsis)),
                             ],
                           ),
                         ),
@@ -418,14 +429,28 @@ class HomePage extends StatelessWidget {
           ),
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () => addTodo(context),
+          onPressed: () {
+            addTodo(context);
+            setState(() {
+              animationPhase = false;
+            });
+          },
           backgroundColor: Colors.grey.withOpacity(0.2),
           child: const Icon(Icons.add_circle_outline,
               size: 50.0, color: Colors.white),
         ),
         body: Stack(children: [
-          SizedBox(
-            child: SimpleAnimation1(),
+          Container(
+            child: (animationPhase)
+                ? Container(child: SimpleAnimation1())
+                : Container(
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('assets/BackGroundSpace.png'),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
           ),
           Positioned(
             top: 75,
@@ -468,8 +493,16 @@ class HomePage extends StatelessWidget {
                                 ),
                                 child: ListTile(
                                   leading: IconButton(
-                                      onPressed: () =>
-                                          deleteTodo(uid, document.id),
+                                      onPressed: () {
+                                        deleteTodo(uid, document.id);
+                                        setState(() {
+                                          if (activeLen.toInt() <= 1) {
+                                            animationPhase = true;
+                                          } else {
+                                            animationPhase = false;
+                                          }
+                                        });
+                                      },
                                       icon: const Icon(
                                         Icons.delete_outline_sharp,
                                         color: Colors.white,
@@ -492,16 +525,23 @@ class HomePage extends StatelessWidget {
                                             unselectedWidgetColor:
                                                 Colors.transparent),
                                         child: Checkbox(
-                                          fillColor: MaterialStateProperty.all(
-                                              Colors.transparent),
-                                          activeColor: Colors.transparent,
-                                          checkColor: Colors.white,
-                                          value: document['done'],
-                                          onChanged: (newValue) => updateTodo(
-                                              newValue ?? false,
-                                              uid,
-                                              document.id),
-                                        )),
+                                            fillColor:
+                                                MaterialStateProperty.all(
+                                                    Colors.transparent),
+                                            activeColor: Colors.transparent,
+                                            checkColor: Colors.white,
+                                            value: document['done'],
+                                            onChanged: (newValue) {
+                                              updateTodo(newValue ?? false, uid,
+                                                  document.id);
+                                              setState(() {
+                                                if (activeLen.toInt() <= 1) {
+                                                  animationPhase = true;
+                                                } else {
+                                                  animationPhase = false;
+                                                }
+                                              });
+                                            })),
                                   ),
                                 ),
                               ),
