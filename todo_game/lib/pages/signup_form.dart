@@ -4,9 +4,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
 import 'package:todo_game/pages/cubit/signup_cubit.dart';
 
-class SignUpForm extends StatelessWidget {
+class SignUpForm extends StatefulWidget {
   const SignUpForm({super.key});
 
+  @override
+  State<SignUpForm> createState() => _SignUpFormState();
+}
+
+class _SignUpFormState extends State<SignUpForm> {
+  var value = false;
+  var terms;
   @override
   Widget build(BuildContext context) {
     return BlocListener<SignUpCubit, SignUpState>(
@@ -58,8 +65,24 @@ class SignUpForm extends StatelessWidget {
             _PasswordInput(),
             const SizedBox(height: 50),
             _ConfirmPasswordInput(),
-            const SizedBox(height: 50),
-            _SignUpButton(),
+            const SizedBox(height: 25),
+            Row(
+              children: [
+                Checkbox(
+                    value: value,
+                    onChanged: (newValue) {
+                      setState(() {
+                        value = newValue!;
+                        terms = true;
+                      });
+                    }),
+                const Text('I have read and agree to the terms of service.',
+                    style: TextStyle(fontSize: 10)),
+              ],
+            ),
+            _SignUpButton(
+              terms: terms,
+            ),
           ],
         ),
       ),
@@ -239,7 +262,16 @@ class _ConfirmPasswordInput extends StatelessWidget {
   }
 }
 
-class _SignUpButton extends StatelessWidget {
+class _SignUpButton extends StatefulWidget {
+  var terms;
+
+  _SignUpButton({required this.terms});
+
+  @override
+  State<_SignUpButton> createState() => _SignUpButtonState();
+}
+
+class _SignUpButtonState extends State<_SignUpButton> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SignUpCubit, SignUpState>(
@@ -251,8 +283,10 @@ class _SignUpButton extends StatelessWidget {
               )
             : GestureDetector(
                 key: const Key('signUpForm_continue_raisedButton'),
-                onTap: state.status.isValidated
-                    ? () => context.read<SignUpCubit>().signUpFormSubmitted()
+                onTap: state.status.isValidated && widget.terms == true
+                    ? () {
+                        context.read<SignUpCubit>().signUpFormSubmitted();
+                      }
                     : null,
                 child: Container(
                   height: 60,

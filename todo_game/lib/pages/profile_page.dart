@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter/material.dart';
+import 'package:todo_game/pages/home_page.dart';
 
 import 'package:todo_game/widgets/chart.dart';
 
@@ -10,19 +11,75 @@ class ProfilePage extends StatelessWidget {
   final Uri _url =
       Uri.parse("https://opensea.io/collection/artvistafirstexposition");
 
-  final email;
   var completedLen;
   var activeLen;
+  var reward;
+  final TextEditingController _rewardController = TextEditingController();
 
   ProfilePage({
     Key? key,
-    required this.email,
     required this.activeLen,
     required this.completedLen,
   }) : super(key: key);
 
   Future<void> signOut() async {
     await FirebaseAuth.instance.signOut();
+  }
+
+  void addReward(BuildContext context) {
+    showModalBottomSheet(
+      backgroundColor: Colors.grey.withOpacity(0.5),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      context: context,
+      builder: (context) => SingleChildScrollView(
+        child: Container(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              child: Column(children: [
+                const Text(
+                  'Add Task',
+                  style: TextStyle(fontSize: 24),
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                TextField(
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    filled: true,
+                    fillColor: const Color(0x33EBC4C4),
+                    hintText: 'Reward',
+                    hintStyle:
+                        const TextStyle(fontSize: 20.0, color: Colors.white),
+                  ),
+                  controller: _rewardController,
+                ),
+                const SizedBox(height: 15),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: const Color(0xFF661f4f),
+                  ),
+                  onPressed: () {
+                    reward = _rewardController.text;
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return HomePage(reward: reward);
+                    }));
+                    // _rewardController.clear();
+                  },
+                  child: const Text('Add', style: TextStyle(fontSize: 20.0)),
+                ),
+              ]),
+            )),
+      ),
+    );
   }
 
   @override
@@ -78,7 +135,13 @@ class ProfilePage extends StatelessWidget {
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20.0),
                   color: Colors.black.withOpacity(0.2)),
-              child: Center(child: Text(email))),
+              child: Center(
+                  child: InkWell(
+                onTap: () {
+                  addReward(context);
+                },
+                child: Text('Set Reward'),
+              ))),
           const SizedBox(height: 20),
           SizedBox(
             height: 200,

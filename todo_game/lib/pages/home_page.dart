@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rive/rive.dart';
+
 import 'package:todo_game/bloc/app_bloc.dart';
 import 'package:todo_game/models/todo.dart';
 import 'package:todo_game/pages/category_page.dart';
@@ -10,9 +10,8 @@ import 'package:todo_game/pages/profile_page.dart';
 import 'package:todo_game/widgets/animation1.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({
-    Key? key,
-  }) : super(key: key);
+  var reward;
+  HomePage({Key? key, this.reward}) : super(key: key);
   static Page<void> page() => MaterialPage<void>(child: HomePage());
 
   @override
@@ -172,7 +171,6 @@ class _HomePageState extends State<HomePage> {
                     ),
                     onPressed: () {
                       firebaseAdd(uid);
-
                       _todoController.clear();
                       _categoryController.clear();
                     },
@@ -277,7 +275,6 @@ class _HomePageState extends State<HomePage> {
                             context,
                             MaterialPageRoute(builder: (context) {
                               return ProfilePage(
-                                  email: email,
                                   activeLen: activeLen,
                                   completedLen: completedLen);
                             }),
@@ -442,7 +439,10 @@ class _HomePageState extends State<HomePage> {
         body: Stack(children: [
           Container(
             child: (animationPhase)
-                ? Container(child: SimpleAnimation1())
+                ? Container(
+                    child: SimpleAnimation1(
+                    reward: widget.reward ?? '',
+                  ))
                 : Container(
                     decoration: const BoxDecoration(
                       image: DecorationImage(
