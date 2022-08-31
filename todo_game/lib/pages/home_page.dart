@@ -276,7 +276,8 @@ class _HomePageState extends State<HomePage> {
                             MaterialPageRoute(builder: (context) {
                               return ProfilePage(
                                   activeLen: activeLen,
-                                  completedLen: completedLen);
+                                  completedLen: completedLen,
+                                  uid: uid);
                             }),
                           );
                           _key.currentState!.closeDrawer();
@@ -425,7 +426,9 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ),
-        floatingActionButton: FloatingActionButton(
+        floatingActionButton: FloatingActionButton.extended(
+          label: const Text('Add Task',
+              style: TextStyle(fontWeight: FontWeight.w900)),
           onPressed: () {
             addTodo(context);
             setState(() {
@@ -433,7 +436,7 @@ class _HomePageState extends State<HomePage> {
             });
           },
           backgroundColor: Colors.grey.withOpacity(0.2),
-          child: const Icon(Icons.add_circle_outline,
+          icon: const Icon(Icons.add_circle_outline,
               size: 50.0, color: Colors.white),
         ),
         body: Stack(children: [

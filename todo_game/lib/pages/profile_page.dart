@@ -1,29 +1,57 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
 import 'package:flutter/material.dart';
-import 'package:todo_game/pages/home_page.dart';
-
 import 'package:todo_game/widgets/chart.dart';
-
 import 'package:url_launcher/url_launcher.dart';
 
 class ProfilePage extends StatelessWidget {
   final Uri _url =
       Uri.parse("https://opensea.io/collection/artvistafirstexposition");
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   var completedLen;
   var activeLen;
-  var reward;
   final TextEditingController _rewardController = TextEditingController();
+
+  String uid;
 
   ProfilePage({
     Key? key,
     required this.activeLen,
     required this.completedLen,
+    required this.uid,
   }) : super(key: key);
 
   Future<void> signOut() async {
     await FirebaseAuth.instance.signOut();
+  }
+
+  // Stream<List<String>> rewardStream(String uid) {
+  //   return firestore
+  //       .collection("users")
+  //       .doc(uid)
+  //       .collection("rewards")
+  //       .snapshots()
+  //       .map((QuerySnapshot query) {
+  //     for (var element in query.docs) {
+  //       return element['reward'];
+  //     }
+  //   });
+  // }
+
+  Future<void> firebaseEdit(String uid, String rewardID) async {
+    try {
+      await firestore
+          .collection("users")
+          .doc(uid)
+          .collection("rewards")
+          .doc(rewardID)
+          .update({
+        'content': _rewardController.text,
+      });
+    } catch (e) {
+      rethrow;
+    }
   }
 
   void addReward(BuildContext context) {
@@ -66,14 +94,7 @@ class ProfilePage extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     primary: const Color(0xFF661f4f),
                   ),
-                  onPressed: () {
-                    reward = _rewardController.text;
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
-                      return HomePage(reward: reward);
-                    }));
-                    // _rewardController.clear();
-                  },
+                  onPressed: () {},
                   child: const Text('Add', style: TextStyle(fontSize: 20.0)),
                 ),
               ]),
@@ -118,9 +139,9 @@ class ProfilePage extends StatelessWidget {
                     }),
                 const SizedBox(width: 10),
                 Column(
-                  children: [
-                    const SizedBox(height: 30),
-                    const Text("NFT STORE",
+                  children: const [
+                    SizedBox(height: 30),
+                    Text("NFT STORE",
                         style: TextStyle(
                             fontSize: 20.0, fontWeight: FontWeight.bold)),
                   ],
@@ -140,7 +161,7 @@ class ProfilePage extends StatelessWidget {
                 onTap: () {
                   addReward(context);
                 },
-                child: Text('Set Reward'),
+                child: const Text('Set Reward'),
               ))),
           const SizedBox(height: 20),
           SizedBox(

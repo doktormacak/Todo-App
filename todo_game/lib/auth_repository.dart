@@ -204,8 +204,12 @@ class AuthenticationRepository {
         password: password,
       );
       final uid = userUid.user?.uid;
-      await FirebaseFirestore.instance.collection("users").doc(uid).set({
-        "email": email,
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(uid)
+          .collection('rewards')
+          .add({
+        "reward": '',
       });
     } on FirebaseAuthException catch (e) {
       throw SignUpWithEmailAndPasswordFailure.fromCode(e.code);

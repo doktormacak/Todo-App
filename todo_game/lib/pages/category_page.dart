@@ -194,10 +194,12 @@ class CategoryPage extends StatelessWidget {
     }
 
     return Scaffold(
-        floatingActionButton: FloatingActionButton(
+        floatingActionButton: FloatingActionButton.extended(
           onPressed: () => addTodo(context),
+          label: const Text('Add Task',
+              style: TextStyle(fontWeight: FontWeight.w900)),
           backgroundColor: Colors.grey.withOpacity(0.2),
-          child: const Icon(Icons.add_circle_outline,
+          icon: const Icon(Icons.add_circle_outline,
               size: 50.0, color: Colors.white),
         ),
         body: Stack(children: [

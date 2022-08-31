@@ -66,19 +66,42 @@ class _SignUpFormState extends State<SignUpForm> {
             const SizedBox(height: 50),
             _ConfirmPasswordInput(),
             const SizedBox(height: 25),
-            Row(
-              children: [
-                Checkbox(
-                    value: value,
-                    onChanged: (newValue) {
-                      setState(() {
-                        value = newValue!;
-                        terms = true;
-                      });
-                    }),
-                const Text('I have read and agree to the terms of service.',
-                    style: TextStyle(fontSize: 10)),
-              ],
+            Padding(
+              padding: const EdgeInsets.only(left: 15.0),
+              child: Row(
+                children: [
+                  Container(
+                    height: 25,
+                    width: 25,
+                    decoration: BoxDecoration(
+                        border: Border.all(color: Colors.white, width: 2),
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(5),
+                        )),
+                    child: Theme(
+                      data:
+                          ThemeData(unselectedWidgetColor: Colors.transparent),
+                      child: Checkbox(
+                          fillColor:
+                              MaterialStateProperty.all(Colors.transparent),
+                          activeColor: Colors.transparent,
+                          checkColor: Colors.white,
+                          value: value,
+                          onChanged: (newValue) {
+                            setState(() {
+                              value = newValue!;
+                              terms = true;
+                            });
+                          }),
+                    ),
+                  ),
+                  GestureDetector(
+                    child: const Text(
+                        '    I have read and agree to the terms of service.',
+                        style: TextStyle(fontSize: 10)),
+                  ),
+                ],
+              ),
             ),
             _SignUpButton(
               terms: terms,
