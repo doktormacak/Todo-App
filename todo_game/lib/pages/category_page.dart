@@ -80,7 +80,6 @@ class CategoryPage extends StatelessWidget {
           .doc(todoId)
           .update({"done": newValue});
     } catch (e) {
-      print(e);
       rethrow;
     }
   }
@@ -252,7 +251,11 @@ class CategoryPage extends StatelessWidget {
                                   leading: IconButton(
                                       onPressed: () =>
                                           deleteTodo(uid, document.id),
-                                      icon: const Icon(Icons.delete)),
+                                      icon: const Icon(
+                                        Icons.delete_outline_sharp,
+                                        color: Colors.white,
+                                        size: 30,
+                                      )),
                                   title: Text(document['content']),
                                   subtitle: Text(document['category']),
                                   onTap: () =>
