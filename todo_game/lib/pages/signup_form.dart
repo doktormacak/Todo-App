@@ -3,12 +3,21 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:formz/formz.dart';
 import 'package:todo_game/pages/cubit/signup_cubit.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SignUpForm extends StatefulWidget {
   const SignUpForm({super.key});
 
   @override
   State<SignUpForm> createState() => _SignUpFormState();
+}
+
+final Uri _url = Uri.parse("https://doktormacak.github.io/Terms-Services/");
+
+Future<void> _launchUrl() async {
+  if (!await launchUrl(_url)) {
+    throw 'Could not launch $_url';
+  }
 }
 
 class _SignUpFormState extends State<SignUpForm> {
@@ -59,11 +68,11 @@ class _SignUpFormState extends State<SignUpForm> {
                 ],
               ),
             ),
-            const SizedBox(height: 50),
+            const SizedBox(height: 40),
             _EmailInput(),
-            const SizedBox(height: 50),
+            const SizedBox(height: 40),
             _PasswordInput(),
-            const SizedBox(height: 50),
+            const SizedBox(height: 40),
             _ConfirmPasswordInput(),
             const SizedBox(height: 25),
             Padding(
@@ -96,9 +105,19 @@ class _SignUpFormState extends State<SignUpForm> {
                     ),
                   ),
                   GestureDetector(
-                    child: const Text(
-                        '    I have read and agree to the terms of service.',
-                        style: TextStyle(fontSize: 10)),
+                    onTap: () {
+                      _launchUrl();
+                    },
+                    child: RichText(
+                      text: const TextSpan(
+                        text: '   I have read and agreed with ',
+                        children: <TextSpan>[
+                          TextSpan(
+                              text: 'Terms of Service',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),
