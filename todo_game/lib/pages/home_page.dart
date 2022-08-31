@@ -444,7 +444,7 @@ class _HomePageState extends State<HomePage> {
             child: (animationPhase)
                 ? Container(
                     child: SimpleAnimation1(
-                    reward: widget.reward ?? '',
+                    uid:uid,
                   ))
                 : Container(
                     decoration: const BoxDecoration(

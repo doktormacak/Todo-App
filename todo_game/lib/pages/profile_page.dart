@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:todo_game/models/reward.dart';
 import 'package:todo_game/widgets/chart.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -11,6 +12,7 @@ class ProfilePage extends StatelessWidget {
 
   var completedLen;
   var activeLen;
+  var rewardId;
   final TextEditingController _rewardController = TextEditingController();
 
   String uid;
@@ -26,20 +28,35 @@ class ProfilePage extends StatelessWidget {
     await FirebaseAuth.instance.signOut();
   }
 
-  // Stream<List<String>> rewardStream(String uid) {
-  //   return firestore
-  //       .collection("users")
-  //       .doc(uid)
-  //       .collection("rewards")
-  //       .snapshots()
-  //       .map((QuerySnapshot query) {
-  //     for (var element in query.docs) {
-  //       return element['reward'];
-  //     }
-  //   });
-  // }
+  Future<String> getID() async {
+    // Get docs from collection reference
+    var querySnapshot = await firestore
+        .collection("users")
+        .doc(uid)
+        .collection('rewards')
+        .get();
 
-  Future<void> firebaseEdit(String uid, String rewardID) async {
+    return querySnapshot.docs[0].id;
+  }
+
+  Stream<List<String?>> rewardStream(String uid) {
+    return firestore
+        .collection("users")
+        .doc(uid)
+        .collection("rewards")
+        .snapshots()
+        .map((QuerySnapshot query) {
+      List<Reward> retVal = [];
+      for (var element in query.docs) {
+        retVal.add(Reward.fromDocumentSnapshot(element));
+      }
+      var list = retVal.map((document) => document.reward).toList();
+      print(list);
+      return list;
+    });
+  }
+
+  Future<void> firebaseEdit(String uid, String rewardID, rewardContent) async {
     try {
       await firestore
           .collection("users")
@@ -47,7 +64,7 @@ class ProfilePage extends StatelessWidget {
           .collection("rewards")
           .doc(rewardID)
           .update({
-        'content': _rewardController.text,
+        'reward': rewardContent,
       });
     } catch (e) {
       rethrow;
@@ -56,7 +73,7 @@ class ProfilePage extends StatelessWidget {
 
   void addReward(BuildContext context) {
     showModalBottomSheet(
-      backgroundColor: Colors.grey.withOpacity(0.5),
+      backgroundColor: Colors.grey,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
       ),
@@ -77,6 +94,7 @@ class ProfilePage extends StatelessWidget {
                   height: 15,
                 ),
                 TextField(
+                  maxLength: 15,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20.0),
@@ -94,7 +112,11 @@ class ProfilePage extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     primary: const Color(0xFF661f4f),
                   ),
-                  onPressed: () {},
+                  onPressed: () async {
+                    rewardId = await getID();
+                    firebaseEdit(uid, rewardId, _rewardController.text);
+                    Navigator.of(context).pop();
+                  },
                   child: const Text('Add', style: TextStyle(fontSize: 20.0)),
                 ),
               ]),
@@ -128,41 +150,46 @@ class ProfilePage extends StatelessWidget {
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20.0),
                 color: Colors.black.withOpacity(0.2)),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                    icon: const Icon(Icons.token,
-                        color: Colors.white, size: 40.0),
-                    onPressed: () {
-                      _launchUrl();
-                    }),
-                const SizedBox(width: 10),
-                Column(
-                  children: const [
-                    SizedBox(height: 30),
-                    Text("NFT STORE",
-                        style: TextStyle(
-                            fontSize: 20.0, fontWeight: FontWeight.bold)),
-                  ],
-                ),
-              ],
+            child: InkWell(
+              onTap: () {
+                _launchUrl();
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.token,
+                    color: Colors.white,
+                    size: 40.0,
+                  ),
+                  const SizedBox(width: 10),
+                  Column(
+                    children: const [
+                      SizedBox(height: 30),
+                      Text("NFT STORE",
+                          style: TextStyle(
+                              fontSize: 20.0, fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 30.0),
-          Container(
-              height: 70,
-              width: 200,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20.0),
-                  color: Colors.black.withOpacity(0.2)),
-              child: Center(
-                  child: InkWell(
-                onTap: () {
-                  addReward(context);
-                },
-                child: const Text('Set Reward'),
-              ))),
+          InkWell(
+            onTap: () {
+              addReward(context);
+            },
+            child: Container(
+                height: 70,
+                width: 200,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20.0),
+                    color: Colors.black.withOpacity(0.2)),
+                child: const Center(
+                  child: Text('Set Reward'),
+                )),
+          ),
           const SizedBox(height: 20),
           SizedBox(
             height: 200,

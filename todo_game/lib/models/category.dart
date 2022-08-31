@@ -9,9 +9,8 @@ class Category {
 
   Category({this.documentId, this.categoryId, this.done});
 
-  Category.fromSnapshot(QueryDocumentSnapshot<Map<String, dynamic>> snapshot)
-  : documentId = snapshot.id, 
-        categoryId = snapshot.data()['category']
-        
- {}
+  Category.fromSnapshot(QueryDocumentSnapshot<Map<String, dynamic>> snapshot) {
+    documentId = snapshot.id;
+    categoryId = snapshot.data()['category'];
+  }
 }
