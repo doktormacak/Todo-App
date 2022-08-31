@@ -118,6 +118,7 @@ class _HomePageState extends State<HomePage> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         ),
+        isScrollControlled: true,
         context: context,
         builder: (context) => SingleChildScrollView(
           child: Container(
@@ -188,6 +189,7 @@ class _HomePageState extends State<HomePage> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         ),
+        isScrollControlled: true,
         context: context,
         builder: (context) => SingleChildScrollView(
           child: Container(
@@ -250,6 +252,7 @@ class _HomePageState extends State<HomePage> {
     }
 
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         key: _key,
         drawer: Drawer(
           shape: const RoundedRectangleBorder(
@@ -444,7 +447,7 @@ class _HomePageState extends State<HomePage> {
             child: (animationPhase)
                 ? Container(
                     child: SimpleAnimation1(
-                    uid:uid,
+                    uid: uid,
                   ))
                 : Container(
                     decoration: const BoxDecoration(

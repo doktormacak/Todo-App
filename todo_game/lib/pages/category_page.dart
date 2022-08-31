@@ -94,6 +94,7 @@ class CategoryPage extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         ),
+        isScrollControlled: true,
         context: context,
         builder: (context) => SingleChildScrollView(
           child: Container(
@@ -194,6 +195,7 @@ class CategoryPage extends StatelessWidget {
     }
 
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () => addTodo(context),
           label: const Text('Add Task',

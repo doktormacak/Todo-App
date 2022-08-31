@@ -77,6 +77,7 @@ class ProfilePage extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
       ),
+      isScrollControlled: true,
       context: context,
       builder: (context) => SingleChildScrollView(
         child: Container(
@@ -85,7 +86,7 @@ class ProfilePage extends StatelessWidget {
             ),
             child: Container(
               padding: const EdgeInsets.all(20),
-              child: Column(children: [
+              child: Column(mainAxisSize: MainAxisSize.min, children: [
                 const Text(
                   'Add Task',
                   style: TextStyle(fontSize: 24),
@@ -128,6 +129,7 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       floatingActionButtonLocation: FloatingActionButtonLocation.startTop,
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(top: 25),
