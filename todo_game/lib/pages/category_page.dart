@@ -133,6 +133,7 @@ class CategoryPage extends StatelessWidget {
                       firebaseAdd(uid);
                       _todoController.clear();
                       _categoryController.clear();
+                      Navigator.of(context).pop();
                     },
                     child: const Text('Add', style: TextStyle(fontSize: 20.0)),
                   ),

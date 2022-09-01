@@ -42,7 +42,8 @@ class _HomePageState extends State<HomePage> {
       await firestore.collection("users").doc(uid).collection("todos").add({
         'content': _todoController.text,
         'category': _categoryController.text,
-        'done': false
+        'done': false,
+        'dateCreated': Timestamp.now(),
       });
     } catch (e) {
       rethrow;
@@ -174,6 +175,7 @@ class _HomePageState extends State<HomePage> {
                       firebaseAdd(uid);
                       _todoController.clear();
                       _categoryController.clear();
+                      Navigator.of(context).pop();
                     },
                     child: const Text('Add', style: TextStyle(fontSize: 20.0)),
                   ),
@@ -555,8 +557,7 @@ class _HomePageState extends State<HomePage> {
                           }).toList(),
                         );
                       } else {
-                        return const Center(
-                            child: Text("Unesi svoje taskovee"));
+                        return const Center(child: Text("Add Tasks"));
                       }
                     }),
               ]),

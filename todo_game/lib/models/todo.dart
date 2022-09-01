@@ -4,6 +4,7 @@ class Todo {
   late String? content;
   late String? category;
   late bool? done;
+  late Timestamp? dateCreated;
 
   Todo(this.content, this.category, this.done);
 
