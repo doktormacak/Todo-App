@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1068145248269",
+    "project_id": "todo-game-app",
+    "storage_bucket": "todo-game-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1068145248269:android:85cbf9bd44ae6fa3d9ad44",
+        "android_client_info": {
+          "package_name": "com.example.todo_game"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1068145248269-1tgmeom9utmhiautgrppsrisi8l08m8u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDHEJwzm_2d-snczQtChviJdKrFoJphI9Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1068145248269-1tgmeom9utmhiautgrppsrisi8l08m8u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
